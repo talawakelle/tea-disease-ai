@@ -1,0 +1,9 @@
+{
+  "name": "TeaGuard AI",
+  "short_name": "TeaGuard",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f5ee",
+  "theme_color": "#123d2b",
+  "description": "Tea disease visual screening with OpenCV capture-quality gate and human review"
+}

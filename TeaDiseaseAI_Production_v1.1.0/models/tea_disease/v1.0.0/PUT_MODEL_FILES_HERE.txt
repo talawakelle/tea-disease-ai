@@ -1,0 +1,9 @@
+Copy these validated project model files into this folder:
+
+tea_disease_yolo26n_v1.0.0.pt
+tea_disease_yolo26n_v1.0.0.onnx
+
+For the existing project on H:\PlantationAI360, run:
+  .\INSTALL_FROM_PLANTATIONAI360.ps1 -PlantationRoot "H:\PlantationAI360"
+
+The application prefers the .pt file by default because that is the artifact directly tied to the held-out benchmark. ONNX is retained for portable deployment options.

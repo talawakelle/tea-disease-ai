@@ -1,0 +1,27 @@
+{
+  "model_version": "tea_disease_yolo26n_v1.0.0",
+  "benchmark_scope": "Held-out public Sri Lankan tea leaf dataset test split",
+  "test_images": 257,
+  "accuracy": 0.9844,
+  "balanced_accuracy": 0.9843,
+  "macro_f1": 0.9861,
+  "weighted_f1": 0.9844,
+  "per_class": {
+    "Algal_Leaf_Spot": {"precision": 1.0, "recall": 0.9833, "f1": 0.9916, "support": 60},
+    "Black_Blight": {"precision": 0.9808, "recall": 0.9623, "f1": 0.9714, "support": 53},
+    "Blister_Blight": {"precision": 1.0, "recall": 0.96, "f1": 0.9796, "support": 25},
+    "Gray_Blight": {"precision": 0.9706, "recall": 1.0, "f1": 0.9851, "support": 66},
+    "Healthy": {"precision": 0.9783, "recall": 1.0, "f1": 0.9890, "support": 45},
+    "Spider_Mites": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "support": 8}
+  },
+  "confusion_matrix_labels": ["Algal_Leaf_Spot","Black_Blight","Blister_Blight","Gray_Blight","Healthy","Spider_Mites"],
+  "confusion_matrix": [
+    [59,1,0,0,0,0],
+    [0,51,0,2,0,0],
+    [0,0,24,0,1,0],
+    [0,0,0,66,0,0],
+    [0,0,0,0,45,0],
+    [0,0,0,0,0,8]
+  ],
+  "limitation": "Not a guarantee of accuracy on customer estate field photographs. Local customer validation is required before field-performance claims."
+}

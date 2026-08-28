@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: teaguard
+      POSTGRES_USER: teaguard
+      POSTGRES_PASSWORD: change-this-before-production
+    volumes:
+      - teaguard_pg:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://teaguard:change-this-before-production@db:5432/teaguard
+      UPLOAD_DIR: /app/uploads
+      COOKIE_SECURE: "false"
+      MODEL_PATH: /app/models/tea_disease/v1.0.0/tea_disease_yolo26n_v1.0.0.pt
+      ONNX_PATH: /app/models/tea_disease/v1.0.0/tea_disease_yolo26n_v1.0.0.onnx
+    volumes:
+      - ./uploads:/app/uploads
+      - ./models:/app/models:ro
+    ports:
+      - "8785:8785"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  teaguard_pg:

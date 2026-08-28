@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#123d2b" />
+  <title>TeaGuard AI</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <section id="authShell" class="auth-shell hidden">
+    <div class="auth-brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><path d="M52 9C31 11 13 23 10 43c9 7 22 9 32 3 12-7 13-23 10-37Z"/><path class="vein" d="M15 47c9-11 18-19 32-29M29 34l-3-12M36 29l11 2"/></svg>
+      </div>
+      <div>
+        <div class="eyebrow">TEA DISEASE INTELLIGENCE</div>
+        <h1>TeaGuard <span>AI</span></h1>
+        <p>Field-ready visual screening with traceable model evidence, review controls and estate-level intelligence.</p>
+      </div>
+      <div class="auth-note">
+        <span class="pulse-dot"></span>
+        Production system • customer-owned deployment
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div id="setupPanel" class="hidden">
+        <div class="section-kicker">FIRST-RUN OWNER SETUP</div>
+        <h2>Create the system owner</h2>
+        <p class="muted">This account controls users, locations, reviews and handover settings.</p>
+        <form id="setupForm" class="stack-form">
+          <label>Company name<input name="company_name" required minlength="2" placeholder="Customer organisation" /></label>
+          <label>Owner name<input name="display_name" required minlength="2" placeholder="System Owner" /></label>
+          <label>Username<input name="username" required minlength="3" autocomplete="username" placeholder="owner" /></label>
+          <label>Password<input name="password" required minlength="10" type="password" autocomplete="new-password" placeholder="Minimum 10 characters" /></label>
+          <button class="btn primary wide" type="submit">Create Owner Account</button>
+        </form>
+      </div>
+
+      <div id="loginPanel" class="hidden">
+        <div class="section-kicker">SECURE ACCESS</div>
+        <h2>Welcome back</h2>
+        <p class="muted">Sign in to scan leaves, review AI results and monitor disease activity.</p>
+        <form id="loginForm" class="stack-form">
+          <label>Username<input name="username" required autocomplete="username" /></label>
+          <label>Password<input name="password" required type="password" autocomplete="current-password" /></label>
+          <button class="btn primary wide" type="submit">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="brand-mark small" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><path d="M52 9C31 11 13 23 10 43c9 7 22 9 32 3 12-7 13-23 10-37Z"/><path class="vein" d="M15 47c9-11 18-19 32-29M29 34l-3-12M36 29l11 2"/></svg>
+        </div>
+        <div><strong id="brandName">TeaGuard AI</strong><span id="brandCompany">Customer Organisation</span></div>
+      </div>
+
+      <nav id="nav" class="nav-list">
+        <button data-view="scan" class="active"><span>◉</span> New Scan</button>
+        <button data-view="dashboard"><span>▦</span> Dashboard</button>
+        <button data-view="history"><span>≡</span> Scan History</button>
+        <button data-view="review"><span>✓</span> Review Queue <b id="reviewBadge" class="badge hidden">0</b></button>
+        <button data-view="locations" class="admin-only"><span>⌖</span> Locations</button>
+        <button data-view="users" class="admin-only"><span>♙</span> Users</button>
+        <button data-view="model"><span>◇</span> Model & Validation</button>
+      </nav>
+
+      <div class="side-footer">
+        <div class="user-chip">
+          <div class="avatar" id="userInitial">U</div>
+          <div><strong id="userName">User</strong><span id="userRole">role</span></div>
+        </div>
+        <button id="logoutBtn" class="text-btn">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">☰</button>
+        <div>
+          <div id="pageEyebrow" class="eyebrow">FIELD SCREENING</div>
+          <h2 id="pageTitle">New Tea Leaf Scan</h2>
+        </div>
+        <div class="model-chip" id="modelChip"><span class="status-dot"></span><div><strong>Model</strong><span>checking…</span></div></div>
+      </header>
+
+      <section id="view-scan" class="view active">
+        <div class="scan-grid">
+          <div class="panel scan-panel">
+            <div class="panel-head">
+              <div><div class="section-kicker">STEP 1</div><h3>Capture or upload a leaf</h3></div>
+              <span class="pill">JPG / PNG / Camera</span>
+            </div>
+            <label id="dropzone" class="dropzone" for="imageInput">
+              <input id="imageInput" type="file" accept="image/*" capture="environment" />
+              <div id="dropEmpty">
+                <div class="camera-orb">⌾</div>
+                <strong>Take a photo or choose an image</strong>
+                <span>For best results: one main leaf, sharp focus, natural light, minimal background clutter.</span>
+                <div class="capture-actions"><button type="button" class="btn secondary" id="cameraBtn">Open Live Camera</button><button type="button" class="btn ghost" id="chooseBtn">Choose Image</button></div>
+              </div>
+              <img id="imagePreview" class="preview hidden" alt="Selected tea leaf preview" />
+              <div id="imageMeta" class="image-meta hidden"></div>
+            </label>
+
+            <div id="qualityPanel" class="quality-panel hidden" aria-live="polite">
+              <div class="quality-head">
+                <div>
+                  <div class="section-kicker">OPENCV PREFLIGHT</div>
+                  <h3>Capture Quality Gate</h3>
+                </div>
+                <div id="qualityGrade" class="quality-grade checking">Checking…</div>
+              </div>
+              <div class="quality-body">
+                <div class="quality-score-wrap">
+                  <div class="quality-score-ring"><strong id="qualityScore">—</strong><span>/100</span></div>
+                  <div><strong id="qualityDecision">Inspecting image</strong><p id="qualityDecisionText" class="muted">AI diagnosis waits until the capture passes the quality gate.</p></div>
+                </div>
+                <div id="qualityChecks" class="quality-check-grid"></div>
+                <div id="qualityWarnings" class="quality-warnings hidden"></div>
+                <div class="quality-scope-note">Capture-quality screening only. Leaf-like coverage is an advisory framing estimate, not lesion segmentation or disease severity.</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="panel-head compact"><div><div class="section-kicker">STEP 2</div><h3>Attach field context</h3></div><span class="muted small">Optional but recommended</span></div>
+            <div class="form-grid three">
+              <label>Estate<select id="estateSelect"><option value="">Not selected</option></select></label>
+              <label>Division<select id="divisionSelect"><option value="">Not selected</option></select></label>
+              <label>Field<select id="fieldSelect"><option value="">Not selected</option></select></label>
+            </div>
+            <label class="full-label">Field notes<textarea id="scanNotes" rows="2" placeholder="Symptoms, weather, block, observer note…"></textarea></label>
+            <button id="predictBtn" class="btn primary scan-btn" disabled><span>✦</span> Analyse Leaf</button>
+            <div id="scanError" class="inline-error hidden"></div>
+          </div>
+
+          <div class="panel result-panel">
+            <div id="resultEmpty" class="result-empty">
+              <div class="diagnostic-ring"><span>AI</span></div>
+              <h3>Ready for analysis</h3>
+              <p>Your result will show the predicted class, confidence, alternative possibilities, model trace and review status.</p>
+              <div class="trust-strip"><span>Model versioned</span><span>Image hashed</span><span>Audit recorded</span></div>
+            </div>
+            <div id="resultBusy" class="result-busy hidden">
+              <div class="scanner"><div></div></div>
+              <h3>Analysing leaf image</h3><p>Running classification and recording model evidence…</p>
+            </div>
+            <div id="resultCard" class="hidden">
+              <div class="result-topline"><span id="resultStatus" class="status-pill">AI RESULT</span><span id="resultRef" class="mono"></span></div>
+              <div class="result-hero">
+                <div><div class="section-kicker">PREDICTED CLASS</div><h2 id="resultClass"></h2><p id="resultMessage" class="muted"></p></div>
+                <div class="confidence-gauge"><svg viewBox="0 0 120 120"><circle class="gauge-bg" cx="60" cy="60" r="50"/><circle id="gaugeArc" class="gauge-arc" cx="60" cy="60" r="50"/></svg><div><strong id="resultConfidence">0%</strong><span>confidence</span></div></div>
+              </div>
+              <div class="top3-wrap"><div class="section-kicker">TOP PREDICTIONS</div><div id="top3Bars"></div></div>
+              <div id="reviewNotice" class="review-notice hidden"></div>
+              <div class="evidence-grid">
+                <div><span>Model version</span><strong id="evModel"></strong></div>
+                <div><span>Estate</span><strong id="evEstate">—</strong></div>
+                <div><span>Division / Field</span><strong id="evField">—</strong></div>
+                <div><span>Scan time</span><strong id="evTime"></strong></div>
+                <div><span>Capture quality</span><strong id="evQuality">—</strong></div>
+                <div><span>OpenCV engine</span><strong id="evQualityEngine">—</strong></div>
+              </div>
+              <div class="safety-box"><strong>Field decision rule</strong><p>This is an AI screening result, not a laboratory diagnosis. Confirm symptoms using the customer’s approved agronomy or plant-pathology protocol before treatment decisions.</p></div>
+              <div class="button-row"><button id="newScanBtn" class="btn ghost">New Scan</button><button id="openHistoryBtn" class="btn secondary">View History</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-dashboard" class="view">
+        <div class="metric-grid">
+          <div class="metric-card"><span>Total scans</span><strong id="mTotal">0</strong><small>Recorded AI screenings</small></div>
+          <div class="metric-card"><span>Review queue</span><strong id="mReview">0</strong><small>Needs human review</small></div>
+          <div class="metric-card"><span>Avg. confidence</span><strong id="mConfidence">0%</strong><small>Across saved scans</small></div>
+          <div class="metric-card"><span>Capture quality</span><strong id="mQuality">0</strong><small>Average OpenCV quality score</small></div>
+          <div class="metric-card accent"><span>Model status</span><strong id="mModel">—</strong><small id="mModelSub">Checking model</small></div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="panel"><div class="panel-head"><div><div class="section-kicker">DISEASE MIX</div><h3>Predicted classes</h3></div></div><div id="diseaseBars" class="bar-list empty-state">No scans yet.</div></div>
+          <div class="panel"><div class="panel-head"><div><div class="section-kicker">ESTATE ACTIVITY</div><h3>Where scans are coming from</h3></div></div><div id="estateBars" class="bar-list empty-state">No estate-linked scans yet.</div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div><div class="section-kicker">LATEST ACTIVITY</div><h3>Recent screening records</h3></div><button class="btn ghost small-btn" data-jump="history">Open full history</button></div><div id="recentTable"></div></div>
+      </section>
+
+      <section id="view-history" class="view">
+        <div class="panel">
+          <div class="panel-head"><div><div class="section-kicker">TRACEABILITY</div><h3>Scan history</h3></div><a class="btn ghost small-btn" href="/api/export/predictions.csv" target="_blank" rel="noopener">Export CSV</a></div>
+          <div class="toolbar"><input id="historySearch" placeholder="Search scan, disease, estate…" /><button id="refreshHistory" class="btn secondary small-btn">Refresh</button></div>
+          <div id="historyTable"></div>
+        </div>
+      </section>
+
+      <section id="view-review" class="view">
+        <div class="panel">
+          <div class="panel-head"><div><div class="section-kicker">HUMAN-IN-THE-LOOP</div><h3>AI review queue</h3></div><span class="pill warning">Review recommended</span></div>
+          <p class="muted">The queue catches low-confidence or close-call predictions and passed images with weak capture quality. High-confidence errors can still occur, so field verification remains part of the operating procedure.</p>
+          <div id="reviewTable"></div>
+        </div>
+      </section>
+
+      <section id="view-locations" class="view">
+        <div class="dashboard-grid">
+          <div class="panel"><div class="panel-head"><div><div class="section-kicker">MASTER DATA</div><h3>Estates</h3></div></div><form id="estateForm" class="inline-form"><input name="name" placeholder="Estate name" required /><button class="btn secondary">Add</button></form><div id="estateList" class="simple-list"></div></div>
+          <div class="panel"><div class="panel-head"><div><div class="section-kicker">MASTER DATA</div><h3>Divisions</h3></div></div><form id="divisionForm" class="stack-form compact-form"><select name="estate_id" id="divisionEstate" required></select><input name="name" placeholder="Division name" required /><button class="btn secondary">Add Division</button></form><div id="divisionList" class="simple-list"></div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div><div class="section-kicker">FIELD REGISTRY</div><h3>Fields</h3></div></div><form id="fieldForm" class="form-grid four"><select name="division_id" id="fieldDivision" required></select><input name="field_code" placeholder="Field code" required /><input name="hectares" type="number" step="0.01" placeholder="Hectares" /><input name="clone" placeholder="Clone / cultivar" /><button class="btn secondary">Add Field</button></form><div id="fieldList" class="simple-list"></div></div>
+      </section>
+
+      <section id="view-users" class="view">
+        <div class="panel">
+          <div class="panel-head"><div><div class="section-kicker">ACCESS CONTROL</div><h3>System users</h3></div></div>
+          <form id="userForm" class="form-grid five"><input name="display_name" placeholder="Display name" required /><input name="username" placeholder="Username" required /><input name="password" type="password" minlength="10" placeholder="Temporary password" required /><select name="role"><option>operator</option><option>reviewer</option><option>viewer</option><option>admin</option></select><button class="btn secondary">Create User</button></form>
+          <div id="userTable"></div>
+        </div>
+      </section>
+
+      <section id="view-model" class="view">
+        <div class="model-hero panel">
+          <div><div class="section-kicker">MODEL GOVERNANCE</div><h3 id="modelNameBig">Tea Disease Model</h3><p class="muted">Versioned model package with validation scope, file fingerprint and deployment readiness status.</p></div>
+          <div id="modelAvailability" class="availability">Checking…</div>
+        </div>
+        <div class="metric-grid model-metrics">
+          <div class="metric-card"><span>Held-out test accuracy</span><strong>98.44%</strong><small>257 public-dataset test images</small></div>
+          <div class="metric-card"><span>Macro F1</span><strong>98.61%</strong><small>Held-out public test split</small></div>
+          <div class="metric-card"><span>Classes</span><strong>6</strong><small>Tea leaf disease / health classes</small></div>
+          <div class="metric-card"><span>Local validation</span><strong class="smaller" id="localValidation">Pending</strong><small>Required before customer accuracy claims</small></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div><div class="section-kicker">IMPORTANT LIMITATION</div><h3>Benchmark scope</h3></div></div><p>The 98.44% benchmark belongs to the project’s held-out public Sri Lankan tea leaf dataset test split. It must not be represented as guaranteed accuracy on a customer’s estate photographs until local field validation is completed.</p><div class="model-details" id="modelDetails"></div></div>
+        <div class="panel cv-governance"><div class="panel-head"><div><div class="section-kicker">CAPTURE GOVERNANCE</div><h3>OpenCV Image Quality Engine</h3></div><span id="cvAvailability" class="pill">Checking…</span></div><p class="muted">The quality engine blocks grossly unusable photographs before disease inference, preserves the normalized original for audit, and creates a colour-preserving resized inference copy. It does not alter disease colours, segment lesions, or estimate severity.</p><div class="model-details" id="cvDetails"></div></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="cameraDialog" class="camera-dialog">
+    <div class="camera-card">
+      <button type="button" class="dialog-close" id="cameraClose">×</button>
+      <div class="section-kicker">GUIDED CAPTURE</div><h3>Centre one main tea leaf</h3>
+      <p class="muted camera-help">Use natural light, keep the phone steady and fill most of the guide with the leaf. OpenCV will verify the image after capture.</p>
+      <div class="live-camera-stage">
+        <video id="cameraVideo" autoplay playsinline muted></video>
+        <div class="leaf-guide" aria-hidden="true"><div class="leaf-guide-shape"></div><span>Place one main leaf here</span></div>
+      </div>
+      <div id="cameraError" class="inline-error hidden"></div>
+      <div class="button-row"><button type="button" class="btn ghost" id="cameraCancel">Cancel</button><button type="button" class="btn primary" id="cameraCapture">Capture Photo</button></div>
+      <canvas id="cameraCanvas" class="hidden"></canvas>
+    </div>
+  </dialog>
+
+  <dialog id="reviewDialog" class="review-dialog">
+    <form method="dialog" class="dialog-card" id="reviewForm">
+      <button type="button" class="dialog-close" id="dialogClose">×</button>
+      <div class="section-kicker">MANUAL REVIEW</div><h3 id="dialogTitle">Review scan</h3>
+      <img id="dialogImage" class="dialog-image" alt="Tea leaf scan" />
+      <div class="dialog-ai" id="dialogAI"></div>
+      <label>Decision<select id="reviewStatus"><option value="confirmed">Confirm AI result</option><option value="corrected">Correct class</option><option value="rejected">Reject / unusable image</option></select></label>
+      <label id="correctedClassWrap" class="hidden">Confirmed class<select id="reviewedClass"><option>Algal_Leaf_Spot</option><option>Black_Blight</option><option>Blister_Blight</option><option>Gray_Blight</option><option>Healthy</option><option>Spider_Mites</option></select></label>
+      <label>Review notes<textarea id="reviewNotes" rows="3" placeholder="Reason, field observation, follow-up…"></textarea></label>
+      <button class="btn primary wide" type="submit">Save Review</button>
+    </form>
+  </dialog>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

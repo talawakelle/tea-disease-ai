@@ -1,0 +1,19 @@
+{
+  "product": "TeaGuard AI",
+  "version": "1.1.0",
+  "edition": "Production Handover + OpenCV Capture Quality",
+  "model": "tea_disease_yolo26n_v1.0.0",
+  "classes": [
+    "Algal_Leaf_Spot",
+    "Black_Blight",
+    "Blister_Blight",
+    "Gray_Blight",
+    "Healthy",
+    "Spider_Mites"
+  ],
+  "computer_vision": {
+    "engine": "OpenCV",
+    "module": "opencv_capture_quality_v1.0.0",
+    "scope": "capture quality and safe preprocessing only"
+  }
+}
